@@ -1,0 +1,13 @@
+{%- import_yaml 'saltstack/vra-terraform/saltstates/infraconf/vars/map.yaml' as ntp -%}
+# ntp.conf: Managed by SaltStack
+driftfile /var/lib/ntp/drift
+restrict default kod nomodify notrap nopeer noquery
+restrict 127.0.0.1
+
+server {{ ntp.ntpserver1 }}
+server {{ ntp.ntpserver2 }}
+server {{ ntp.ntpserver3 }}
+server {{ ntp.ntpserver4 }}
+
+# Broadcase Delay.
+broadcastdelay 0.008

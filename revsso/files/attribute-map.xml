@@ -1,0 +1,14 @@
+<Attributes xmlns="urn:mace:shibboleth:2.0:attribute-map" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Attribute name="email" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" id="email">
+<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="fname" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" id="FirstName">
+<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="lname" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" id="LastName">
+<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="appuserid" nameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" id="appuserid">
+<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+</Attributes>

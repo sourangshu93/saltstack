@@ -1,0 +1,8 @@
+{%- import_yaml 'saltstack/vra-terraform/saltstates/infraconf/vars/map.yaml' as dns -%}
+# This file is managed by SaltStack
+search vmware.com infra-dev.vmware.com
+options timeout:1
+nameserver {{ dns.oneclouddns1 }}
+nameserver {{ dns.oneclouddns3 }}
+nameserver {{ dns.oneclouddns2 }}
+nameserver {{ dns.oneclouddns4 }}

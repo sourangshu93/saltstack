@@ -1,0 +1,69 @@
+{%- set cbagent = salt['service.missing']('cbagentd') -%}
+{%- set osver = salt['grains.get']('osmajorrelease') | string -%}
+beacons:
+  inotify:
+    - files:
+        /etc/resolv.conf:
+          mask:
+            - modify
+        /etc/yum.repos.d/VMware-CentOS-All.repo:
+          mask:
+            - modify
+        /etc/yum.repos.d/VMware-OEL-All.repo:
+          mask:
+            - modify
+{% if osver != '8' %}
+        /etc/ntp.conf:
+          mask:
+            - modify
+{% endif %}
+        /etc/snmp.conf:
+          mask:
+            - modify
+        /etc/profile:
+          mask:
+            - modify
+        /etc/profile.d/test.sh:
+          mask:
+            - modify
+        /etc/rsyslog.conf:
+          mask:
+            - modify
+        /etc/nsswitch.conf:
+          mask:
+            - modify
+        /etc/pam.d/password-auth-ac:
+          mask:
+            - modify
+        /etc/pam.d/system-auth-ac:
+          mask:
+            - modify
+        /etc/sysconfig/authconfig:
+          mask:
+            - modify
+        /etc/sssd/sssd.conf:
+          mask:
+            - modify
+        /etc/sudoers:
+          mask:
+            - modify
+    - interval: 15
+    - disable_during_state_run: True
+  service:
+    - services:
+        ntpd:
+          onchangeonly: True
+          emitatstartup: False
+        sssd:
+          onchangeonly: True
+          emitatstartup: False
+{% if cbagent == 'False' -%}
+        cbagentd:
+          onchangeonly: True
+          emitatstartup: False
+{%- endif %}
+        nscd:
+          onchangeonly: True
+          emitatstartup: False
+    - interval: 10
+    - disable_during_state_run: True

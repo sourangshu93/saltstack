@@ -1,0 +1,167 @@
+{%- set sssd_sudo_access = pillar.get('sssd_sudo_access',"Disabled") -%}
+{%- set custom = pillar.get('custom',"Disabled") -%}
+{%- if sssd_sudo_access != 'Disabled' -%}
+################################# N O T E #######################################
+#                       Saltstack       Managed                                 #
+#################################################################################
+
+########################## Default User alias specification starts here ##########################
+
+########################## Default User Alias specifiction ends here ###########################
+########################## Default user privilege specification starts here ###########################
+root     ALL = (ALL) ALL
+%g.it-devops-sysadmins ALL = (ALL) NOPASSWD:ALL
+%g.st.admins.corp.linux ALL = (ALL) NOPASSWD:ALL
+%linuxops               ALL = (ALL) NOPASSWD:ALL
+salinux                 ALL = (ALL) NOPASSWD:ALL
+ansiuser ALL = (ALL) NOPASSWD:ALL
+infosecuser ALL = (ALL) ALL
+########################## Default user privilege specification ends here ###########################
+
+########################## Default Command alias specification starts from here ###########################
+Cmnd_Alias  SHELLS=/sbin/jsh,/sbin/sh,/bin/csh,/bin/jsh,/bin/ksh,/bin/remsh,/bin/rsh,/bin/rksh,/bin/sh,/usr/bin/tcsh,\
+                   /usr/bin/csh,/usr/bin/jsh,/usr/bin/ksh,/bin/tcsh,/usr/bin/remsh,/usr/bin/rsh,/usr/bin/rksh,/usr/bin/sh,/bin/bash
+Cmnd_Alias  ROOTPASSWD=/usr/bin/passwd root,/usr/bin/passwd -f root,/usr/bin/passwd -r files root,/bin/passwd root,/bin/passwd -f root,\
+                       /bin/passwd -r files root,/usr/sbin/vipw, /usr/bin/passwd, /bin/passwd
+Cmnd_Alias  SUROOT=!/usr/bin/su - ?*,!/bin/su ?*
+Cmnd_Alias      VISUDO=/usr/sbin/visudo, /usr/bin/vim /etc/sudoers, /usr/bin/vim sudoers, /bin/vim /etc/sudoers, /bin/vim sudoers, /bin/vi /etc/sudoers,\
+                   /bin/vi sudoers, /usr/bin/vi /etc/sudoers,/usr/bin/vi sudoers, /usr/bin/nano /etc/sudoers, /usr/bin/nano sudoers, /bin/nano /etc/sudoers,\
+                   /bin/nano sudoers, /bin/cat /etc/sudoers, /bin/cat sudoers, /usr/bin/cat /etc/sudoers,/usr/bin/cat sudoers, /usr/bin/less /etc/sudoers,\
+                   /usr/bin/less sudoers, /bin/more /etc/sudoers, /bin/more sudoers, /bin/cp /etc/sudoers,/bin/cp sudoers,/usr/bin/scp /etc/sudoers,\
+                   /usr/bin/scp sudoers, /usr/bin/more /etc/sudoers, /usr/bin/more sudoers, /usr/bin/cp /etc/sudoers, /usr/bin/cp sudoers,\
+                   /bin/scp /etc/sudoers, /bin/scp sudoers
+Cmnd_Alias  VISHADOW=/usr/bin/vim /etc/shadow, /usr/bin/vim shadow,/usr/bin/vi /etc/shadow,/usr/bin/vi shadow,/usr/bin/nano /etc/shadow,/usr/bin/nano shadow,\
+                     /bin/cat /etc/shadow,/bin/cat shadow, /usr/bin/less /etc/shadow, /usr/bin/less shadow, /bin/more /etc/shadow, /bin/more shadow, \
+                     /bin/vim /etc/shadow, /bin/vim shadow,/bin/vi /etc/shadow, /bin/vi shadow, /bin/nano /etc/shadow, /bin/nano shadow,\
+                     /usr/bin/cat /etc/shadow, /usr/bin/cat shadow,/bin/less /etc/shadow, /bin/less shadow, /usr/bin/more /etc/shadow, /usr/bin/more shadow
+Cmnd_Alias      YUM=/usr/bin/yum,/bin/yum
+Cmnd_Alias      VI=/usr/bin/vi, /bin/vi, /bin/vim, /usr/bin/vim
+Cmnd_Alias  ROOTONLY=SHELLS, ROOTPASSWD, SUROOT, VISUDO, VISHADOW, YUM, VI, SUDO,/usr/bin/su -,/usr/bin/su - root,/bin/su "",/bin/su root
+Cmnd_Alias      RESTRICTED_COMMANDS = /usr/sbin/user*, /bin/kill, /usr/bin/killall, /sbin/*
+Cmnd_Alias      ROOTONLY_DEV = SHELLS,ROOTPASSWD,SUROOT,VISUDO,VISHADOW, RESTRICTED_COMMANDS,/usr/bin/su -,/usr/bin/su - root,/bin/su "",/bin/su root
+Cmnd_Alias      SUORACLE_DEFAULT = /bin/su oracle, /bin/su - oracle, /usr/bin/su oracle, /usr/bin/su - oracle,/oracle/product/grid//bin/crsctl *
+Cmnd_Alias  SUORACLE = /bin/su oracle, /bin/su - oracle, /usr/bin/su oracle, /usr/bin/su - oracle
+Cmnd_Alias  SUDEPLOY = /bin/su - deployadmin, /bin/su deployadmin
+Cmnd_Alias  DBTASKS=/bin/su mysql, /bin/su - mysql, /usr/bin/systemctl status mysqld, /usr/bin/systemctl stop mysqld, /usr/bin/systemctl start mysqld, /usr/bin/systemctl restart mysqld, /sbin/service mysqld start, /sbin/service mysqld stop, /sbin/service mysqld restart, /sbin/service mysqld status, /etc/init.d/mysqld start, /etc/init.d/mysqld stop, /etc/init.d/mysqld status, /etc/init.d/mysqld restart,/bin/vi /etc/my.cnf,/usr/bin/vim /etc/my.cnf
+Cmnd_Alias  SUAPEXAPP = /bin/su apexapp, /bin/su - apexapp, /usr/bin/su apexapp, /usr/bin/su - apexapp
+Cmnd_Alias  DOCKCMD = /usr/bin/docker, /etc/init.d/docker, /usr/bin/systemctl stop docker, /usr/bin/systemctl start docker, /usr/bin/systemctl status docker, /usr/bin/curl, /usr/bin/wget, /usr/bin/add-nirmata-agent, /usr/bin/add-nirmata-private-cloud-agent, /usr/bin/tail, /sbin/stop, /sbin/start, /usr/local/bin/docker-compose, /usr/bin/sh
+########################## Default Command alias specification ends here ###########################
+## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
+#includedir /etc/sudoers.d
+
+Cmnd_Alias SUMONITORING=/bin/su loginsight, /bin/su - loginsight, /etc/init.d/liagentd restart, /etc/init.d/liagentd start, /etc/init.d/liagentd stop, /etc/init.d/liagentd status, /bin/su - epops, /bin/su epops,/usr/bin/systemctl status telegraf, /usr/bin/systemctl start telegraf, /usr/bin/systemctl stop telegraf, /usr/bin/systemctl restart telegraf, /usr/bin/vi /etc/telegraf/*, /usr/bin/tail /var/log/telegraf/*, /usr/bin/view /var/log/telegraf/*
+User_Alias ITMON  = %IT-Monitoring
+ITMON ALL = (ALL) NOPASSWD:SUMONITORING
+#############################################{% extends "saltstack/vra-terraform/saltstates/sudo/files/Cmnd_Alias.jinja" %}
+{%- elif custom != 'Disabled' and custom != 'None' -%}
+################################################################################
+#                       Saltstack       Managed                                 #
+#################################################################################
+
+########################## Default User alias specification starts here ##########################
+
+########################## Default User Alias specifiction ends here ###########################
+########################## Default user privilege specification starts here ###########################
+root     ALL = (ALL) ALL
+%g.it-devops-sysadmins ALL = (ALL) NOPASSWD:ALL
+%g.st.admins.corp.linux ALL = (ALL) NOPASSWD:ALL
+%linuxops               ALL = (ALL) NOPASSWD:ALL
+salinux                 ALL = (ALL) NOPASSWD:ALL
+ansiuser ALL = (ALL) NOPASSWD:ALL
+infosecuser ALL = (ALL) ALL
+########################## Default user privilege specification ends here ###########################
+
+########################## Default Command alias specification starts from here ###########################
+Cmnd_Alias  SHELLS=/sbin/jsh,/sbin/sh,/bin/csh,/bin/jsh,/bin/ksh,/bin/remsh,/bin/rsh,/bin/rksh,/bin/sh,/usr/bin/tcsh,\
+                   /usr/bin/csh,/usr/bin/jsh,/usr/bin/ksh,/bin/tcsh,/usr/bin/remsh,/usr/bin/rsh,/usr/bin/rksh,/usr/bin/sh,/bin/bash
+Cmnd_Alias  ROOTPASSWD=/usr/bin/passwd root,/usr/bin/passwd -f root,/usr/bin/passwd -r files root,/bin/passwd root,/bin/passwd -f root,\
+                       /bin/passwd -r files root,/usr/sbin/vipw, /usr/bin/passwd, /bin/passwd
+Cmnd_Alias  SUROOT=!/usr/bin/su - ?*,!/bin/su ?*
+Cmnd_Alias      VISUDO=/usr/sbin/visudo, /usr/bin/vim /etc/sudoers, /usr/bin/vim sudoers, /bin/vim /etc/sudoers, /bin/vim sudoers, /bin/vi /etc/sudoers,\
+                   /bin/vi sudoers, /usr/bin/vi /etc/sudoers,/usr/bin/vi sudoers, /usr/bin/nano /etc/sudoers, /usr/bin/nano sudoers, /bin/nano /etc/sudoers,\
+                   /bin/nano sudoers, /bin/cat /etc/sudoers, /bin/cat sudoers, /usr/bin/cat /etc/sudoers,/usr/bin/cat sudoers, /usr/bin/less /etc/sudoers,\
+                   /usr/bin/less sudoers, /bin/more /etc/sudoers, /bin/more sudoers, /bin/cp /etc/sudoers,/bin/cp sudoers,/usr/bin/scp /etc/sudoers,\
+                   /usr/bin/scp sudoers, /usr/bin/more /etc/sudoers, /usr/bin/more sudoers, /usr/bin/cp /etc/sudoers, /usr/bin/cp sudoers,\
+                   /bin/scp /etc/sudoers, /bin/scp sudoers
+Cmnd_Alias  VISHADOW=/usr/bin/vim /etc/shadow, /usr/bin/vim shadow,/usr/bin/vi /etc/shadow,/usr/bin/vi shadow,/usr/bin/nano /etc/shadow,/usr/bin/nano shadow,\
+                     /bin/cat /etc/shadow,/bin/cat shadow, /usr/bin/less /etc/shadow, /usr/bin/less shadow, /bin/more /etc/shadow, /bin/more shadow, \
+                     /bin/vim /etc/shadow, /bin/vim shadow,/bin/vi /etc/shadow, /bin/vi shadow, /bin/nano /etc/shadow, /bin/nano shadow,\
+                     /usr/bin/cat /etc/shadow, /usr/bin/cat shadow,/bin/less /etc/shadow, /bin/less shadow, /usr/bin/more /etc/shadow, /usr/bin/more shadow
+Cmnd_Alias      YUM=/usr/bin/yum,/bin/yum
+Cmnd_Alias      VI=/usr/bin/vi, /bin/vi, /bin/vim, /usr/bin/vim
+Cmnd_Alias  ROOTONLY=SHELLS, ROOTPASSWD, SUROOT, VISUDO, VISHADOW, YUM, VI, SUDO,/usr/bin/su -,/usr/bin/su - root,/bin/su "",/bin/su root
+Cmnd_Alias      RESTRICTED_COMMANDS = /usr/sbin/user*, /bin/kill, /usr/bin/killall, /sbin/*
+Cmnd_Alias      ROOTONLY_DEV = SHELLS,ROOTPASSWD,SUROOT,VISUDO,VISHADOW, RESTRICTED_COMMANDS,/usr/bin/su -,/usr/bin/su - root,/bin/su "",/bin/su root
+Cmnd_Alias      SUORACLE_DEFAULT = /bin/su oracle, /bin/su - oracle, /usr/bin/su oracle, /usr/bin/su - oracle,/oracle/product/grid//bin/crsctl *
+Cmnd_Alias  SUORACLE = /bin/su oracle, /bin/su - oracle, /usr/bin/su oracle, /usr/bin/su - oracle
+Cmnd_Alias  SUDEPLOY = /bin/su - deployadmin, /bin/su deployadmin
+Cmnd_Alias  DBTASKS=/bin/su mysql, /bin/su - mysql, /usr/bin/systemctl status mysqld, /usr/bin/systemctl stop mysqld, /usr/bin/systemctl start mysqld, /usr/bin/systemctl restart mysqld, /sbin/service mysqld start, /sbin/service mysqld stop, /sbin/service mysqld restart, /sbin/service mysqld status, /etc/init.d/mysqld start, /etc/init.d/mysqld stop, /etc/init.d/mysqld status, /etc/init.d/mysqld restart,/bin/vi /etc/my.cnf,/usr/bin/vim /etc/my.cnf
+Cmnd_Alias  SUAPEXAPP = /bin/su apexapp, /bin/su - apexapp, /usr/bin/su apexapp, /usr/bin/su - apexapp
+Cmnd_Alias  DOCKCMD = /usr/bin/docker, /etc/init.d/docker, /usr/bin/systemctl stop docker, /usr/bin/systemctl start docker, /usr/bin/systemctl status docker, /usr/bin/curl, /usr/bin/wget, /usr/bin/add-nirmata-agent, /usr/bin/add-nirmata-private-cloud-agent, /usr/bin/tail, /sbin/stop, /sbin/start, /usr/local/bin/docker-compose, /usr/bin/sh
+########################## Default Command alias specification ends here ###########################
+## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
+#includedir /etc/sudoers.d
+
+Cmnd_Alias SUMONITORING=/bin/su loginsight, /bin/su - loginsight, /etc/init.d/liagentd restart, /etc/init.d/liagentd start, /etc/init.d/liagentd stop, /etc/init.d/liagentd status, /bin/su - epops, /bin/su epops,/usr/bin/systemctl status telegraf, /usr/bin/systemctl start telegraf, /usr/bin/systemctl stop telegraf, /usr/bin/systemctl restart telegraf, /usr/bin/vi /etc/telegraf/*, /usr/bin/tail /var/log/telegraf/*, /usr/bin/view /var/log/telegraf/*
+User_Alias ITMON  = %IT-Monitoring
+ITMON ALL = (ALL) NOPASSWD:SUMONITORING
+#############################################
+User_Alias CUSTOM_READONLY  = {{ custom }}
+CUSTOM_READONLY ALL = (ALL) ALL,!ROOTONLY_DEV
+
+{%- else -%}
+
+################################################################################
+#                       Saltstack       Managed                                 #
+#################################################################################
+
+########################## Default User alias specification starts here ##########################
+
+########################## Default User Alias specifiction ends here ###########################
+########################## Default user privilege specification starts here ###########################
+root     ALL = (ALL) ALL
+%g.it-devops-sysadmins ALL = (ALL) NOPASSWD:ALL
+%g.st.admins.corp.linux ALL = (ALL) NOPASSWD:ALL
+%linuxops               ALL = (ALL) NOPASSWD:ALL
+salinux                 ALL = (ALL) NOPASSWD:ALL
+ansiuser ALL = (ALL) NOPASSWD:ALL
+infosecuser ALL = (ALL) ALL
+########################## Default user privilege specification ends here ###########################
+
+########################## Default Command alias specification starts from here ###########################
+Cmnd_Alias  SHELLS=/sbin/jsh,/sbin/sh,/bin/csh,/bin/jsh,/bin/ksh,/bin/remsh,/bin/rsh,/bin/rksh,/bin/sh,/usr/bin/tcsh,\
+                   /usr/bin/csh,/usr/bin/jsh,/usr/bin/ksh,/bin/tcsh,/usr/bin/remsh,/usr/bin/rsh,/usr/bin/rksh,/usr/bin/sh,/bin/bash
+Cmnd_Alias  ROOTPASSWD=/usr/bin/passwd root,/usr/bin/passwd -f root,/usr/bin/passwd -r files root,/bin/passwd root,/bin/passwd -f root,\
+                       /bin/passwd -r files root,/usr/sbin/vipw, /usr/bin/passwd, /bin/passwd
+Cmnd_Alias  SUROOT=!/usr/bin/su - ?*,!/bin/su ?*
+Cmnd_Alias      VISUDO=/usr/sbin/visudo, /usr/bin/vim /etc/sudoers, /usr/bin/vim sudoers, /bin/vim /etc/sudoers, /bin/vim sudoers, /bin/vi /etc/sudoers,\
+                   /bin/vi sudoers, /usr/bin/vi /etc/sudoers,/usr/bin/vi sudoers, /usr/bin/nano /etc/sudoers, /usr/bin/nano sudoers, /bin/nano /etc/sudoers,\
+                   /bin/nano sudoers, /bin/cat /etc/sudoers, /bin/cat sudoers, /usr/bin/cat /etc/sudoers,/usr/bin/cat sudoers, /usr/bin/less /etc/sudoers,\
+                   /usr/bin/less sudoers, /bin/more /etc/sudoers, /bin/more sudoers, /bin/cp /etc/sudoers,/bin/cp sudoers,/usr/bin/scp /etc/sudoers,\
+                   /usr/bin/scp sudoers, /usr/bin/more /etc/sudoers, /usr/bin/more sudoers, /usr/bin/cp /etc/sudoers, /usr/bin/cp sudoers,\
+                   /bin/scp /etc/sudoers, /bin/scp sudoers
+Cmnd_Alias  VISHADOW=/usr/bin/vim /etc/shadow, /usr/bin/vim shadow,/usr/bin/vi /etc/shadow,/usr/bin/vi shadow,/usr/bin/nano /etc/shadow,/usr/bin/nano shadow,\
+                     /bin/cat /etc/shadow,/bin/cat shadow, /usr/bin/less /etc/shadow, /usr/bin/less shadow, /bin/more /etc/shadow, /bin/more shadow, \
+                     /bin/vim /etc/shadow, /bin/vim shadow,/bin/vi /etc/shadow, /bin/vi shadow, /bin/nano /etc/shadow, /bin/nano shadow,\
+                     /usr/bin/cat /etc/shadow, /usr/bin/cat shadow,/bin/less /etc/shadow, /bin/less shadow, /usr/bin/more /etc/shadow, /usr/bin/more shadow
+Cmnd_Alias      YUM=/usr/bin/yum,/bin/yum
+Cmnd_Alias      VI=/usr/bin/vi, /bin/vi, /bin/vim, /usr/bin/vim
+Cmnd_Alias  ROOTONLY=SHELLS, ROOTPASSWD, SUROOT, VISUDO, VISHADOW, YUM, VI, SUDO,/usr/bin/su -,/usr/bin/su - root,/bin/su "",/bin/su root
+Cmnd_Alias      RESTRICTED_COMMANDS = /usr/sbin/user*, /bin/kill, /usr/bin/killall, /sbin/*
+Cmnd_Alias      ROOTONLY_DEV = SHELLS,ROOTPASSWD,SUROOT,VISUDO,VISHADOW, RESTRICTED_COMMANDS,/usr/bin/su -,/usr/bin/su - root,/bin/su "",/bin/su root
+Cmnd_Alias      SUORACLE_DEFAULT = /bin/su oracle, /bin/su - oracle, /usr/bin/su oracle, /usr/bin/su - oracle,/oracle/product/grid//bin/crsctl *
+Cmnd_Alias  SUORACLE = /bin/su oracle, /bin/su - oracle, /usr/bin/su oracle, /usr/bin/su - oracle
+Cmnd_Alias  SUDEPLOY = /bin/su - deployadmin, /bin/su deployadmin
+Cmnd_Alias  DBTASKS=/bin/su mysql, /bin/su - mysql, /usr/bin/systemctl status mysqld, /usr/bin/systemctl stop mysqld, /usr/bin/systemctl start mysqld, /usr/bin/systemctl restart mysqld, /sbin/service mysqld start, /sbin/service mysqld stop, /sbin/service mysqld restart, /sbin/service mysqld status, /etc/init.d/mysqld start, /etc/init.d/mysqld stop, /etc/init.d/mysqld status, /etc/init.d/mysqld restart,/bin/vi /etc/my.cnf,/usr/bin/vim /etc/my.cnf
+Cmnd_Alias  SUAPEXAPP = /bin/su apexapp, /bin/su - apexapp, /usr/bin/su apexapp, /usr/bin/su - apexapp
+Cmnd_Alias  DOCKCMD = /usr/bin/docker, /etc/init.d/docker, /usr/bin/systemctl stop docker, /usr/bin/systemctl start docker, /usr/bin/systemctl status docker, /usr/bin/curl, /usr/bin/wget, /usr/bin/add-nirmata-agent, /usr/bin/add-nirmata-private-cloud-agent, /usr/bin/tail, /sbin/stop, /sbin/start, /usr/local/bin/docker-compose, /usr/bin/sh
+########################## Default Command alias specification ends here ###########################
+## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
+#includedir /etc/sudoers.d
+
+Cmnd_Alias SUMONITORING=/bin/su loginsight, /bin/su - loginsight, /etc/init.d/liagentd restart, /etc/init.d/liagentd start, /etc/init.d/liagentd stop, /etc/init.d/liagentd status, /bin/su - epops, /bin/su epops,/usr/bin/systemctl status telegraf, /usr/bin/systemctl start telegraf, /usr/bin/systemctl stop telegraf, /usr/bin/systemctl restart telegraf, /usr/bin/vi /etc/telegraf/*, /usr/bin/tail /var/log/telegraf/*, /usr/bin/view /var/log/telegraf/*
+User_Alias ITMON  = %IT-Monitoring
+ITMON ALL = (ALL) NOPASSWD:SUMONITORING
+#############################################
+{% endif %}
+

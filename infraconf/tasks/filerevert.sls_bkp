@@ -1,0 +1,153 @@
+{% set mod_file = pillar.get('file') %}
+{% set new_minion = pillar.get('new_minion') %}
+
+Check_Flag_{{ mod_file }}:
+  salt.function:
+    - tgt: {{ new_minion }}
+    - name: cmd.run 
+    - arg:
+      - ls -l {{ mod_file }}_modified
+
+{% if mod_file == "/etc/sudoers" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.sudo.tasks.main
+    - saltenv: saltstack
+    - concurrent: true
+    - onfail:
+      - Check_Flag_{{ mod_file }}
+
+{% elif mod_file == "/etc/resolv.conf" or mod_file == "/etc/nsswitch.conf" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.resolv_nsswitch
+    - pillar:
+        mod_file: {{ mod_file }}    
+    - saltenv: saltstack
+    - concurrent: true
+
+{% elif "/etc/yum.repos.d/" in mod_file and "swp" not in mod_file %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.configurerepo
+    - saltenv: saltstack
+    - concurrent: true
+
+{% elif mod_file == "/etc/ntp.conf" or mod_file == "/etc/snmp.conf" %}
+
+Run_{{ mod_file}}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.ntpsnmp
+    - pillar:
+        mod_file: {{ mod_file }}
+    - saltenv: saltstack
+    - concurrent: true
+
+{% elif mod_file == "/etc/cron.d/sysstat" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.sysstat
+    - saltenv: saltstack
+    - concurrent: true
+
+{% elif mod_file == "/etc/profile" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.profile
+    - saltenv: saltstack
+    - concurrent: true
+
+{% elif mod_file == "/etc/rsyslog.conf" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.rsyslog
+    - saltenv: saltstack
+    - concurrent: true
+
+{% elif mod_file == "/etc/pam.d/password-auth-ac" or mod_file == "/etc/pam.d/system-auth-ac" or mod_file == "/etc/profile.d/test.sh" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.filecopy
+    - pillar:
+        mod_file: {{ mod_file }}
+    - saltenv: saltstack
+    - concurrent: true
+ 
+{% elif mod_file == "/etc/sysconfig/authconfig" %}
+
+Run_{{ mod_file }}:
+  salt.state:
+    - tgt: {{ new_minion }}
+    - sls:
+      - saltstack.vra-terraform.saltstates.infraconf.tasks.authconfig
+    - saltenv: saltstack
+    - concurrent: true
+
+
+{% endif %}
+
+Create_flag_{{ mod_file }}:
+  salt.function:
+    - name: cmd.run
+    - tgt: {{ new_minion }}
+    - arg:
+      - touch {{ mod_file }}_modified
+    - require:
+      - Run_{{ mod_file }}
+
+Remove_flag_{{ mod_file }}:
+  salt.function:
+    - name: cmd.run
+    - tgt: {{ new_minion }}
+    - arg:
+      - rm -f {{ mod_file }}_modified
+    - require:
+      - Check_Flag_{{ mod_file }}
+
+test.sleep:
+  module.run:
+    - length: 30
+
+email-on-success:
+  smtp.send_msg:
+    - name:  SaltStack found that {{ mod_file }} was modified. Reverting to the original state.
+    - profile: my-smtp-login
+    - recipient: srakshiit@vmware.com
+    - subject: Salt-Stack Monitoring-'{{ new_minion }}-SUCCESS'
+    - require:
+      - Run_{{ mod_file }}
+      - test.sleep
+
+email-on-failure:
+  smtp.send_msg:
+    - name: SaltStack found that {{ mod_file }} was modified. Failed to revert original state. Please login and check {{ mod_file }}.
+    - profile: my-smtp-login
+    - recipient: srakshiit@vmware.com
+    - subject: Salt-Stack Monitoring-'{{ new_minion }}-FAILURE'
+    - onfail_all:
+      - smtp: email-on-success
+      - Check_Flag_{{ mod_file }}
+

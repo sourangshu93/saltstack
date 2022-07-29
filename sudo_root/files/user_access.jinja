@@ -1,0 +1,5 @@
+{%- import_yaml 'saltstack/vra-terraform/saltstates/sudo_root/vars/map.yaml' as users -%}
+
+{%- for users in users.sudo_user -%}
+{{ users }} ALL = (ALL) NOPASSWD:ALL
+{% endfor %}

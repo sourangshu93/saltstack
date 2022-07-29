@@ -1,0 +1,13 @@
+{% set sssd_sudo_access = pillar.get('sssd_sudo_access') %}
+{%- for item in sssd_sudo_access -%}
+
+{%- if item in CMDA %}
+{{ CMDA[item] }}
+{%- endif %}
+{%- if item in USERA %}
+{{ USERA[item] }}
+{%- endif %}
+{%- if item in ACCE %}
+{{ ACCE[item] }}
+{%- endif %}
+{% endfor %}
